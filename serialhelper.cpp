@@ -11,6 +11,7 @@ QMutex recTextTex_;
 } //global send param mutex, uesd for multi process
 namespace SendProcessParam {
 QMutex senTextTex_;
+QMutex startSendTex_;
 }
 serialHelper::serialHelper(QWidget *parent)
     : QMainWindow(parent)
@@ -264,7 +265,8 @@ void serialHelper::FunctionInit()
         .sendHex = &this->sendHex,
         .senDivideChar = &this->senDivideChar,
         .autoSended = &this->autoSended,
-        .msDelay = &this->msDelay
+        .msDelay = &this->msDelay,
+        .startSend = &startSend
     };
     if (this->sen_handler != nullptr) delete this->sen_handler;
     this->sen_handler = new SendThread(sen_param);
@@ -407,8 +409,9 @@ void serialHelper::SendSectorClear()
 
 void serialHelper::SendFunc()
 {
-
-
+    SendProcessParam::startSendTex_.lock();
+    this->startSend = true;
+    SendProcessParam::startSendTex_.unlock();
 }
 
 serialHelper::~serialHelper()
@@ -467,14 +470,22 @@ void SendThread::run()
 {
 // send logic
     std::string status;
+    bool startSend;
     while(!this->isInterruptionRequested()) {
         ProcessParam::StatusTex_.lock();
         status = this->param_.serialStaus->text().toStdString();
         ProcessParam::StatusTex_.unlock();
         if (status == CONNECT) {
-            //send logic
-            continue;
-            //coding ...
+            SendProcessParam::startSendTex_.lock();
+            startSend = *this->param_.startSend;
+            SendProcessParam::startSendTex_.unlock();
+            if (startSend) {
+                if (*this->param_.autoSended) {
+                    //auto send logic
+                } else {
+                    //send once logic
+                }
+            } else msleep(1);
         } else msleep(1);
     }
 }

@@ -39,6 +39,7 @@ typedef struct {
     char* senDivideChar;
     bool* autoSended;
     int* msDelay;
+    bool* startSend;
 } SendParam;
 class ReciveThread;
 class SendThread;
@@ -123,6 +124,7 @@ private:
     char senDivideChar;
     bool autoSended;
     int msDelay;
+    bool startSend;
 
     //recive thread
     ReciveThread* rec_handler = nullptr;
