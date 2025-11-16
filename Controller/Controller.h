@@ -7,6 +7,8 @@ class Model;
 class serialHelper;
 struct InitParam;
 typedef struct InitParam InitParam;
+struct RunParam;
+typedef struct RunParam RunParam;
 class Controller : public QObject {
     Q_OBJECT
 public slots:

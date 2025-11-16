@@ -8,6 +8,8 @@ class Controller;
 class serialHelper;
 struct InitParam;
 typedef struct InitParam InitParam;
+struct RunParam;
+typedef struct RunParam RunParam;
 class Model : public QObject {
     Q_OBJECT
 private:

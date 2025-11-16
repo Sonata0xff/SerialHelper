@@ -25,6 +25,8 @@ class Model;
 class Controller;
 struct InitParam;
 typedef struct InitParam InitParam;
+struct RunParam;
+typedef struct RunParam RunParam;
 class serialHelper : public QMainWindow
 {
     Q_OBJECT
@@ -96,6 +98,18 @@ private:
     std::string DataSize;
     std::string stopBit;
     std::string CheckBit;
+
+    //receive config
+    bool getHex;
+    bool autoChange;
+    char recDivideChar;
+
+    //send config
+    bool sendHex;
+    char senDivideChar;
+    bool autoSend_;
+    int msDelay;
+
 public slots:
     void StartSerialFunc();
     void StopSerialFunc();

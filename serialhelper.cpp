@@ -268,40 +268,47 @@ void serialHelper::StartSerialFunc()
     this->sendDivideCharC->setEnabled(false);
     this->autoSendC->setEnabled(false);
     this->spin->setEnabled(false);
-    QSerialPort::BaudRate baudRate;
-    QSerialPort::DataBits dataBits;
-    QSerialPort::StopBits stopBits;
-    QSerialPort::Parity checkBits;
+
+    //serial config
     portName = this->portNumberC->currentText().toStdString();
     if (portName == "") {
         QMessageBox::critical(this, "error hint", "No serial port detected!!!");
         StopSerialFunc();
         return;
     }
-    //serial config
     BaudRate = this->portBandBitC->currentText().toStdString();
     DataSize = this->portDataBitC->currentText().toStdString();
     stopBit = this->portStopBitC->currentText().toStdString();
     CheckBit = this->portCheckBitC->currentText().toStdString();
-    if (BaudRate == "1200") baudRate = QSerialPort::Baud1200;
-    else if (BaudRate == "2400") baudRate = QSerialPort::Baud2400;
-    else if (BaudRate == "4800") baudRate = QSerialPort::Baud4800;
-    else if (BaudRate == "9600") baudRate = QSerialPort::Baud9600;
-    else if (BaudRate == "19200") baudRate = QSerialPort::Baud19200;
-    else if (BaudRate == "38400") baudRate = QSerialPort::Baud38400;
-    else if (BaudRate == "57600") baudRate = QSerialPort::Baud57600;
-    else if (BaudRate == "115200") baudRate = QSerialPort::Baud115200;
 
-    if (DataSize == "5") dataBits = QSerialPort::Data5;
-    else if (DataSize == "6") dataBits = QSerialPort::Data6;
-    else if (DataSize == "7") dataBits = QSerialPort::Data7;
-    else if (DataSize == "8") dataBits = QSerialPort::Data8;
+    //receive config
+    getHex = this->hexGetC->isChecked();
+    autoChange = this->rowAutoChangeC->isChecked();
+    recDivideChar = this->reciveDivideCharC->toPlainText().toStdString()[0];
 
-    if (stopBit == "1") stopBits = QSerialPort::OneStop;
+    //send config
+    sendHex = this->hexSendC->isChecked();
+    senDivideChar = this->sendDivideCharC->toPlainText().toStdString()[0];
+    autoSend_ = this->autoSendC->isChecked();
+    msDelay = this->spin->value();
 
-    if (CheckBit == "False") checkBits = QSerialPort::NoParity;
-    else if (CheckBit == "Odd") checkBits = QSerialPort::OddParity;
-    else if (CheckBit == "Even") checkBits = QSerialPort::EvenParity;
+    //load run param
+    RunParam runParam = {
+        .portName = portName,
+        .baudRate = BaudRate,
+        .dataSize = DataSize,
+        .stopBit = stopBit,
+        .checkBit = CheckBit,
+        .getHex = getHex,
+        .autoChange = autoChange,
+        .recDivideChar = recDivideChar,
+        .sendHex = sendHex,
+        .senDivideChar = senDivideChar,
+        .autoSend_ = autoSend_,
+        .msDelay = msDelay
+    };
+    //ready for open the serial port
+    //coding ...
     ChangeStatus(CONNECT);
 }
 void serialHelper::StopSerialFunc()
