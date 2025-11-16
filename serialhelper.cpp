@@ -1,7 +1,10 @@
 #include "serialhelper.h"
 #include "./ui_serialhelper.h"
+#include "./Controller/Controller.h"
+#include "structure.h"
+#include "./Model/Model.h"
 #include "windowConfig.h"
-
+#include <QThread>
 serialHelper::serialHelper(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::serialHelper)
@@ -153,9 +156,6 @@ serialHelper::serialHelper(QWidget *parent)
     //palette init
     this->palette.setColor(QPalette::Window, Qt::lightGray);
     this->setPalette(this->palette);
-
-    //func init
-    FunctionInit();
 }
 
 void serialHelper::paintEvent(QPaintEvent* event)
@@ -197,8 +197,9 @@ void serialHelper::ChangeStatus(std::string status)
     this->statusRes->setPalette(pe);
 }
 
-void serialHelper::FunctionInit()
+bool serialHelper::FunctionInit(InitParam* param)
 {
+    this->param_ = param;
     QStringList baudbit = {
         "1200",
         "2400",
@@ -227,22 +228,18 @@ void serialHelper::FunctionInit()
         "Even"
     };
     this->portCheckBitC->addItems(checkBit);
-    connect(this->portCheckPort.get(), &QPushButton::clicked, this, &serialHelper::CheckPort);
+    //multi connect
+    connect(this, &serialHelper::InitSignal, param->controller, &Controller::FunctionInit, Qt::BlockingQueuedConnection);
     connect(this->portStartPort.get(), &QPushButton::clicked, this, &serialHelper::StartSerialFunc);
     connect(this->portStopPort.get(), &QPushButton::clicked, this, &serialHelper::StopSerialFunc);
     connect(this->reciveClear.get(), &QPushButton::clicked, this, &serialHelper::ReciveSectorClear);
     connect(this->sendClear.get(), &QPushButton::clicked, this, &serialHelper::SendSectorClear);
     this->sendOut->setEnabled(false);
     this->portStopPort->setEnabled(false);
-}
-
-void serialHelper::CheckPort()
-{
-    QList<QSerialPortInfo> portList = QSerialPortInfo::availablePorts();
-    this->portNumberC->clear();
-    for (auto& item : portList) {
-        this->portNumberC->addItem(item.portName());
-    }
+    //transport init signal
+    param->controllerThread->start();
+    bool ret = emit InitSignal(param_);
+    return ret;
 }
 
 void serialHelper::StartSerialFunc()
@@ -302,16 +299,6 @@ void serialHelper::StartSerialFunc()
     if (CheckBit == "False") checkBits = QSerialPort::NoParity;
     else if (CheckBit == "Odd") checkBits = QSerialPort::OddParity;
     else if (CheckBit == "Even") checkBits = QSerialPort::EvenParity;
-    this->serialPort.setPortName(portName.c_str());
-    this->serialPort.setBaudRate(baudRate);
-    this->serialPort.setDataBits(dataBits);
-    this->serialPort.setStopBits(stopBits);
-    this->serialPort.setParity(checkBits);
-    if (this->serialPort.open(QIODevice::ReadWrite) != true) {
-        QMessageBox::critical(this, "error hint", "open serial failed!!!");
-        StopSerialFunc();
-        return;
-    }
     ChangeStatus(CONNECT);
 }
 void serialHelper::StopSerialFunc()
@@ -337,9 +324,9 @@ void serialHelper::StopSerialFunc()
     this->sendDivideCharC->setEnabled(true);
     this->autoSendC->setEnabled(true);
     this->spin->setEnabled(true);
-    if (this->serialPort.isOpen()) {
+    /*if (this->serialPort.isOpen()) {
         this->serialPort.close();
-    }
+    }*/
     ChangeStatus(DISCONNECT);
 }
 
@@ -352,6 +339,14 @@ void serialHelper::SendSectorClear()
     this->sender->setPlainText("");
 }
 
+void serialHelper::closeEvent(QCloseEvent * e)
+{
+    this->param_->controllerThread->exit();
+    this->param_->modelThread->exit();
+    this->param_->controllerThread->wait();
+    this->param_->modelThread->wait();
+    QMainWindow::closeEvent(e);
+}
 
 serialHelper::~serialHelper()
 {

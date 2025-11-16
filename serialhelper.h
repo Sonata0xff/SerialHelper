@@ -21,6 +21,10 @@ namespace Ui {
 class serialHelper;
 }
 QT_END_NAMESPACE
+class Model;
+class Controller;
+struct InitParam;
+typedef struct InitParam InitParam;
 class serialHelper : public QMainWindow
 {
     Q_OBJECT
@@ -30,6 +34,8 @@ public:
     ~serialHelper();
     void paintEvent(QPaintEvent *event) override;
     void ChangeStatus(std::string status);
+    bool FunctionInit(InitParam* param);
+    void closeEvent(QCloseEvent * e) override;
 
 private:
     Ui::serialHelper *ui;
@@ -81,10 +87,9 @@ private:
     std::shared_ptr<QLabel> statusCon;
     std::shared_ptr<QLabel> statusRes;
 
-    QSerialPort serialPort;
     QPalette palette;
+    InitParam* param_;
 private:
-    void FunctionInit();
     //serial config
     std::string portName;
     std::string BaudRate;
@@ -92,11 +97,12 @@ private:
     std::string stopBit;
     std::string CheckBit;
 public slots:
-    void CheckPort();
     void StartSerialFunc();
     void StopSerialFunc();
     void ReciveSectorClear();
     void SendSectorClear();
+signals:
+    bool InitSignal(InitParam* param);
 };
 
 #endif // SERIALHELPER_H
