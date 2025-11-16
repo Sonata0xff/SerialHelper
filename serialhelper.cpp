@@ -229,7 +229,10 @@ bool serialHelper::FunctionInit(InitParam* param)
     };
     this->portCheckBitC->addItems(checkBit);
     //multi connect
-    connect(this, &serialHelper::InitSignal, param->controller, &Controller::FunctionInit, Qt::BlockingQueuedConnection);
+    connect(this, &serialHelper::InitSignal, param_->controller, &Controller::FunctionInit, Qt::BlockingQueuedConnection);
+    connect(this, &serialHelper::PortNumberRequest, param_->controller, &Controller::RequestForPortNumber, Qt::BlockingQueuedConnection);
+    connect(this, &serialHelper::PortNumberRequestReturn, param_->controller, &Controller::RequestForPortNumberPostHandle);
+    connect(this->portCheckPort.get(), &QPushButton::clicked, this, &serialHelper::CheckPortNumber);
     connect(this->portStartPort.get(), &QPushButton::clicked, this, &serialHelper::StartSerialFunc);
     connect(this->portStopPort.get(), &QPushButton::clicked, this, &serialHelper::StopSerialFunc);
     connect(this->reciveClear.get(), &QPushButton::clicked, this, &serialHelper::ReciveSectorClear);
@@ -346,6 +349,22 @@ void serialHelper::closeEvent(QCloseEvent * e)
     this->param_->controllerThread->wait();
     this->param_->modelThread->wait();
     QMainWindow::closeEvent(e);
+}
+
+void serialHelper::CheckPortNumber()
+{
+    std::shared_ptr<QStringList> ret = std::make_shared<QStringList>();
+    ret->clear();
+    this->portNumberC->clear();
+    bool res = emit PortNumberRequest(ret);
+    if (!res) {
+        ret = nullptr;
+        QMessageBox::critical(this, "system error", "Get serial port failed!!!");
+        return;
+    }
+    this->portNumberC->addItems(*ret);
+    ret = nullptr;
+    emit PortNumberRequestReturn(true);
 }
 
 serialHelper::~serialHelper()

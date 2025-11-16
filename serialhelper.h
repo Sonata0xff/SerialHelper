@@ -101,8 +101,11 @@ public slots:
     void StopSerialFunc();
     void ReciveSectorClear();
     void SendSectorClear();
+    void CheckPortNumber();
 signals:
     bool InitSignal(InitParam* param);
+    bool PortNumberRequest(std::shared_ptr<QStringList> ret);
+    void PortNumberRequestReturn(bool ret);
 };
 
 #endif // SERIALHELPER_H

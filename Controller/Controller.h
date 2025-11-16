@@ -11,8 +11,12 @@ class Controller : public QObject {
     Q_OBJECT
 public slots:
     bool FunctionInit(InitParam* param);
+    bool RequestForPortNumber(std::shared_ptr<QStringList> ret);
+    void RequestForPortNumberPostHandle(bool ret);
 signals:
     bool InitSignal(InitParam* param);
-
+    bool RequestForPortNumberSignal(std::shared_ptr<QStringList> ret);
+private:
+    std::shared_ptr<QStringList> portNumberRequestPtr;
 };
 #endif // CONTROLLER_H

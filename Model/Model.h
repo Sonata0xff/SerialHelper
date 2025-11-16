@@ -14,6 +14,7 @@ private:
     QSerialPort serialPort;
 public slots:
     bool FunctionInit(InitParam* param);
+    bool RequestForPortNumber(std::shared_ptr<QStringList> ret);
 
 };
 #endif // MODEL_H
