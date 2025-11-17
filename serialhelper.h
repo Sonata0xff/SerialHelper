@@ -120,6 +120,8 @@ signals:
     bool InitSignal(InitParam* param);
     bool PortNumberRequest(std::shared_ptr<QStringList> ret);
     void PortNumberRequestReturn(bool ret);
+    bool StartPortRequest(std::shared_ptr<RunParam> param);
+    void StartPortRequestReturn(bool ret);
 };
 
 #endif // SERIALHELPER_H

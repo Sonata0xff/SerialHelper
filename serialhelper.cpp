@@ -232,6 +232,8 @@ bool serialHelper::FunctionInit(InitParam* param)
     connect(this, &serialHelper::InitSignal, param_->controller, &Controller::FunctionInit, Qt::BlockingQueuedConnection);
     connect(this, &serialHelper::PortNumberRequest, param_->controller, &Controller::RequestForPortNumber, Qt::BlockingQueuedConnection);
     connect(this, &serialHelper::PortNumberRequestReturn, param_->controller, &Controller::RequestForPortNumberPostHandle);
+    connect(this, &serialHelper::StartPortRequest, param_->controller, &Controller::RequestForPortStart, Qt::BlockingQueuedConnection);
+    connect(this, &serialHelper::StartPortRequestReturn, param_->controller, &Controller::RequestForPortStartPostHandle);
     connect(this->portCheckPort.get(), &QPushButton::clicked, this, &serialHelper::CheckPortNumber);
     connect(this->portStartPort.get(), &QPushButton::clicked, this, &serialHelper::StartSerialFunc);
     connect(this->portStopPort.get(), &QPushButton::clicked, this, &serialHelper::StopSerialFunc);
@@ -293,22 +295,48 @@ void serialHelper::StartSerialFunc()
     msDelay = this->spin->value();
 
     //load run param
-    RunParam runParam = {
-        .portName = portName,
-        .baudRate = BaudRate,
-        .dataSize = DataSize,
-        .stopBit = stopBit,
-        .checkBit = CheckBit,
-        .getHex = getHex,
-        .autoChange = autoChange,
-        .recDivideChar = recDivideChar,
-        .sendHex = sendHex,
-        .senDivideChar = senDivideChar,
-        .autoSend_ = autoSend_,
-        .msDelay = msDelay
-    };
-    //ready for open the serial port
-    //coding ...
+    std::shared_ptr<RunParam> runParam = std::make_shared<RunParam>();
+    runParam->portName = portName;
+    runParam->baudRate = BaudRate;
+    runParam->dataSize = DataSize;
+    runParam->stopBit = stopBit;
+    runParam->checkBit = CheckBit;
+    runParam->getHex = getHex;
+    runParam->autoChange = autoChange;
+    runParam->recDivideChar = recDivideChar;
+    runParam->sendHex = sendHex;
+    runParam->senDivideChar = senDivideChar;
+    runParam->autoSend_ = autoSend_;
+    runParam->msDelay = msDelay;
+    bool ret = emit StartPortRequest(runParam);
+    if (!ret) {
+        runParam = nullptr;
+        this->portNumberC->setEnabled(true);
+        this->portBandBitC->setEnabled(true);
+        this->portDataBitC->setEnabled(true);
+        this->portStopBitC->setEnabled(true);
+        this->portCheckBitC->setEnabled(true);
+        this->portCheckPort->setEnabled(true);
+        this->portStartPort->setEnabled(true);
+        this->portStopPort->setEnabled(false);
+        this->sendOut->setEnabled(false);
+        this->portNumberC->setEnabled(true);
+        this->portBandBitC->setEnabled(true);
+        this->portDataBitC->setEnabled(true);
+        this->portStopBitC->setEnabled(true);
+        this->portCheckBitC->setEnabled(true);
+        this->hexGetC->setEnabled(true);
+        this->rowAutoChangeC->setEnabled(true);
+        this->reciveDivideCharC->setEnabled(true);
+        this->hexSendC->setEnabled(true);
+        this->sendDivideCharC->setEnabled(true);
+        this->autoSendC->setEnabled(true);
+        this->spin->setEnabled(true);
+        QMessageBox::critical(this, "system error", "start serial port failed!!!");
+        return;
+    }
+    runParam = nullptr;
+    emit StartPortRequestReturn(true);
     ChangeStatus(CONNECT);
 }
 void serialHelper::StopSerialFunc()

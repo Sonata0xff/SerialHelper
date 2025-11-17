@@ -13,10 +13,12 @@ typedef struct RunParam RunParam;
 class Model : public QObject {
     Q_OBJECT
 private:
-    QSerialPort serialPort;
+    std::shared_ptr<QSerialPort> serialPort;
+    std::shared_ptr<RunParam> param_;
 public slots:
     bool FunctionInit(InitParam* param);
     bool RequestForPortNumber(std::shared_ptr<QStringList> ret);
+    bool RequestForPortStart(std::shared_ptr<RunParam> param);
 
 };
 #endif // MODEL_H

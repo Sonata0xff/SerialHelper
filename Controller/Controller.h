@@ -15,10 +15,14 @@ public slots:
     bool FunctionInit(InitParam* param);
     bool RequestForPortNumber(std::shared_ptr<QStringList> ret);
     void RequestForPortNumberPostHandle(bool ret);
+    bool RequestForPortStart(std::shared_ptr<RunParam> param);
+    void RequestForPortStartPostHandle(bool ret);
 signals:
     bool InitSignal(InitParam* param);
     bool RequestForPortNumberSignal(std::shared_ptr<QStringList> ret);
+    bool RequestForPortStartSignal(std::shared_ptr<RunParam> param);
 private:
     std::shared_ptr<QStringList> portNumberRequestPtr;
+    std::shared_ptr<RunParam> portStartRequestPtr;
 };
 #endif // CONTROLLER_H
