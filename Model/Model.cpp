@@ -75,5 +75,5 @@ bool Model::RequestForPortStop()
         this->serialPort->clear();
         this->serialPort->close();
     }
-    return false;
+    return true;
 }
