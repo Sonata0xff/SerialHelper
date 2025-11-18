@@ -9,6 +9,7 @@ bool Controller::FunctionInit(InitParam* param)
     connect(this, &Controller::InitSignal, param->model, &Model::FunctionInit, Qt::BlockingQueuedConnection);
     connect(this, &Controller::RequestForPortNumberSignal, param->model, &Model::RequestForPortNumber, Qt::BlockingQueuedConnection);
     connect(this, &Controller::RequestForPortStartSignal, param->model, &Model::RequestForPortStart, Qt::BlockingQueuedConnection);
+    connect(this, &Controller::RequestForPortStopSignal, param->model, &Model::RequestForPortStop, Qt::BlockingQueuedConnection);
     param->modelThread->start();
     return emit InitSignal(param);
 }
@@ -32,6 +33,10 @@ bool Controller::RequestForPortStart(std::shared_ptr<RunParam> param)
 void Controller::RequestForPortStartPostHandle(bool ret)
 {
     if (ret) this->portStartRequestPtr = nullptr;
+}
+bool Controller::RequestForPortStop()
+{
+    return emit RequestForPortStopSignal();
 }
 
 

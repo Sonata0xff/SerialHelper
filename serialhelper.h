@@ -122,6 +122,7 @@ signals:
     void PortNumberRequestReturn(bool ret);
     bool StartPortRequest(std::shared_ptr<RunParam> param);
     void StartPortRequestReturn(bool ret);
+    bool StopPortRequest();
 };
 
 #endif // SERIALHELPER_H

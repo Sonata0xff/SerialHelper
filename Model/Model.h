@@ -19,6 +19,7 @@ public slots:
     bool FunctionInit(InitParam* param);
     bool RequestForPortNumber(std::shared_ptr<QStringList> ret);
     bool RequestForPortStart(std::shared_ptr<RunParam> param);
+    bool RequestForPortStop();
 
 };
 #endif // MODEL_H

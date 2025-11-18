@@ -68,3 +68,12 @@ bool Model::RequestForPortStart(std::shared_ptr<RunParam> param)
     if (this->serialPort->open(QIODevice::ReadWrite) != true) return false;
     else return true;
 }
+
+bool Model::RequestForPortStop()
+{
+    if (this->serialPort->isOpen()) {
+        this->serialPort->clear();
+        this->serialPort->close();
+    }
+    return false;
+}

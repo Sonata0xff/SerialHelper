@@ -17,10 +17,12 @@ public slots:
     void RequestForPortNumberPostHandle(bool ret);
     bool RequestForPortStart(std::shared_ptr<RunParam> param);
     void RequestForPortStartPostHandle(bool ret);
+    bool RequestForPortStop();
 signals:
     bool InitSignal(InitParam* param);
     bool RequestForPortNumberSignal(std::shared_ptr<QStringList> ret);
     bool RequestForPortStartSignal(std::shared_ptr<RunParam> param);
+    bool RequestForPortStopSignal();
 private:
     std::shared_ptr<QStringList> portNumberRequestPtr;
     std::shared_ptr<RunParam> portStartRequestPtr;

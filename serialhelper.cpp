@@ -234,6 +234,7 @@ bool serialHelper::FunctionInit(InitParam* param)
     connect(this, &serialHelper::PortNumberRequestReturn, param_->controller, &Controller::RequestForPortNumberPostHandle);
     connect(this, &serialHelper::StartPortRequest, param_->controller, &Controller::RequestForPortStart, Qt::BlockingQueuedConnection);
     connect(this, &serialHelper::StartPortRequestReturn, param_->controller, &Controller::RequestForPortStartPostHandle);
+    connect(this, &serialHelper::StopPortRequest, param_->controller, &Controller::RequestForPortStop, Qt::BlockingQueuedConnection);
     connect(this->portCheckPort.get(), &QPushButton::clicked, this, &serialHelper::CheckPortNumber);
     connect(this->portStartPort.get(), &QPushButton::clicked, this, &serialHelper::StartSerialFunc);
     connect(this->portStopPort.get(), &QPushButton::clicked, this, &serialHelper::StopSerialFunc);
@@ -362,10 +363,9 @@ void serialHelper::StopSerialFunc()
     this->sendDivideCharC->setEnabled(true);
     this->autoSendC->setEnabled(true);
     this->spin->setEnabled(true);
-    /*if (this->serialPort.isOpen()) {
-        this->serialPort.close();
-    }*/
+    bool res = emit StopPortRequest();
     ChangeStatus(DISCONNECT);
+    if (!res) QMessageBox::critical(this, "system error", "stop serial port failed!!!");
 }
 
 void serialHelper::ReciveSectorClear()
