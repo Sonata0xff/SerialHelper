@@ -7,7 +7,7 @@ bool Model::FunctionInit(InitParam* param)
 {
     this->serialPort = std::make_shared<QSerialPort>();
     connect(this->serialPort.get(), &QSerialPort::readyRead, this, &Model::RequestForReceive);
-    connect(this, &Model::RequestForDataTrans, param->controller, &Controller::ReequestForDataToView);
+    connect(this, &Model::RequestForDataTrans, param->controller, &Controller::RequestForDataToView);
     return true;
 }
 
@@ -100,6 +100,31 @@ void Model::RequestForReceive()
     }
     emit RequestForDataTrans(transData);
     while(0);
+}
+
+bool Model::RequestForSend(std::shared_ptr<QString> data)
+{
+    if (*data == "") return false;
+    QStringList strs=  data->split(this->param_->senDivideChar);
+    for (int i = 0; i < strs.size(); ++i) {
+        if (this->param_->sendHex) {
+            //is odd
+            QByteArray tmpArray = strs[i].toLocal8Bit();
+            if(tmpArray.size()%2 != 0) return false;
+            //is iegal
+            for(char c : tmpArray){
+                if(!std::isxdigit(c)){
+                    return false;
+                }
+            }
+            QByteArray qbArray = QByteArray::fromHex(tmpArray);
+            this->serialPort->write(qbArray);
+        } else {
+            QByteArray arraySend(strs[i].toStdString().c_str(), sizeof(strs[i]));
+            this->serialPort->write(arraySend);
+        }
+    }
+    return true;
 }
 
 

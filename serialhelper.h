@@ -117,6 +117,8 @@ public slots:
     void SendSectorClear();
     void CheckPortNumber();
     bool ShowRecString(std::shared_ptr<QString> data);
+    void SendOutData();
+    void SendFailHandle();
 signals:
     bool InitSignal(InitParam* param);
     bool PortNumberRequest(std::shared_ptr<QStringList> ret);
@@ -124,6 +126,7 @@ signals:
     bool StartPortRequest(std::shared_ptr<RunParam> param);
     void StartPortRequestReturn(bool ret);
     bool StopPortRequest();
+    void SendOutDataRequest(std::shared_ptr<QString> data);
 };
 
 #endif // SERIALHELPER_H

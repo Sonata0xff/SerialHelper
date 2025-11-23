@@ -18,16 +18,20 @@ public slots:
     bool RequestForPortStart(std::shared_ptr<RunParam> param);
     void RequestForPortStartPostHandle(bool ret);
     bool RequestForPortStop();
-    void ReequestForDataToView(std::shared_ptr<QString> data);
+    void RequestForDataToView(std::shared_ptr<QString> data);
+    void RequestForSendData(std::shared_ptr<QString> data);
 signals:
     bool InitSignal(InitParam* param);
     bool RequestForPortNumberSignal(std::shared_ptr<QStringList> ret);
     bool RequestForPortStartSignal(std::shared_ptr<RunParam> param);
     bool RequestForPortStopSignal();
-    bool ReequestForDataToViewSignal(std::shared_ptr<QString> data);
+    bool RequestForDataToViewSignal(std::shared_ptr<QString> data);
+    bool RequestForDataToModelSignal(std::shared_ptr<QString> data);
+    void SendFailSignal();
 private:
     std::shared_ptr<QStringList> portNumberRequestPtr;
     std::shared_ptr<RunParam> portStartRequestPtr;
     std::shared_ptr<QString> dataTransToView;
+    std::shared_ptr<QString> dataTransToModel;
 };
 #endif // CONTROLLER_H

@@ -21,6 +21,7 @@ public slots:
     bool RequestForPortStart(std::shared_ptr<RunParam> param);
     bool RequestForPortStop();
     void RequestForReceive();
+    bool RequestForSend(std::shared_ptr<QString> data);
 signals:
     void RequestForDataTrans(std::shared_ptr<QString> data);
 };

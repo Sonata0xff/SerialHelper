@@ -235,11 +235,13 @@ bool serialHelper::FunctionInit(InitParam* param)
     connect(this, &serialHelper::StartPortRequest, param_->controller, &Controller::RequestForPortStart, Qt::BlockingQueuedConnection);
     connect(this, &serialHelper::StartPortRequestReturn, param_->controller, &Controller::RequestForPortStartPostHandle);
     connect(this, &serialHelper::StopPortRequest, param_->controller, &Controller::RequestForPortStop, Qt::BlockingQueuedConnection);
+    connect(this, &serialHelper::SendOutDataRequest, param_->controller, &Controller::RequestForSendData);
     connect(this->portCheckPort.get(), &QPushButton::clicked, this, &serialHelper::CheckPortNumber);
     connect(this->portStartPort.get(), &QPushButton::clicked, this, &serialHelper::StartSerialFunc);
     connect(this->portStopPort.get(), &QPushButton::clicked, this, &serialHelper::StopSerialFunc);
     connect(this->reciveClear.get(), &QPushButton::clicked, this, &serialHelper::ReciveSectorClear);
     connect(this->sendClear.get(), &QPushButton::clicked, this, &serialHelper::SendSectorClear);
+    connect(this->sendOut.get(), &QPushButton::clicked,  this, &serialHelper::SendOutData);
     this->sendOut->setEnabled(false);
     this->portStopPort->setEnabled(false);
     //transport init signal
@@ -412,6 +414,19 @@ bool serialHelper::ShowRecString(std::shared_ptr<QString> data)
 {
     this->reciver->insertPlainText(*data);
     return true;
+}
+
+void serialHelper::SendOutData()
+{
+    std::shared_ptr<QString> tmpString = std::make_shared<QString>("");
+    *tmpString = this->sender->toPlainText();
+    emit SendOutDataRequest(tmpString);
+    while(0);
+}
+
+void serialHelper::SendFailHandle()
+{
+    QMessageBox::critical(this, "comm error", "send data failed!!!");
 }
 
 serialHelper::~serialHelper()
