@@ -3,10 +3,11 @@
 #include "../serialhelper.h"
 #include "../structure.h"
 #include <QThread>
-
 bool Model::FunctionInit(InitParam* param)
 {
     this->serialPort = std::make_shared<QSerialPort>();
+    connect(this->serialPort.get(), &QSerialPort::readyRead, this, &Model::RequestForReceive);
+    connect(this, &Model::RequestForDataTrans, param->controller, &Controller::ReequestForDataToView);
     return true;
 }
 
@@ -77,3 +78,31 @@ bool Model::RequestForPortStop()
     }
     return true;
 }
+
+
+void Model::RequestForReceive()
+{
+    if (!this->serialPort->isOpen()) return;
+    QString recBuf = this->serialPort->readAll();
+    std::shared_ptr<QString> transData = std::make_shared<QString>("");
+    if (this->param_->getHex) {
+        QByteArray tmpBuf = recBuf.toUtf8().toHex().toUpper();
+        recBuf = QString::fromUtf8(tmpBuf);
+        for (int i = 0; i < recBuf.size(); ++i) {
+            if (i != 0 && i % 2 == 0) transData->append(this->param_->recDivideChar);
+            transData->append(recBuf[i]);
+        }
+    } else {
+        for (int i = 0; i < recBuf.size();  ++i) {
+            if (i != 0) transData->append(this->param_->recDivideChar);
+            transData->append(recBuf[i]);
+        }
+    }
+    emit RequestForDataTrans(transData);
+    while(0);
+}
+
+
+
+
+

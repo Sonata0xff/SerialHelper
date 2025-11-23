@@ -10,6 +10,7 @@ bool Controller::FunctionInit(InitParam* param)
     connect(this, &Controller::RequestForPortNumberSignal, param->model, &Model::RequestForPortNumber, Qt::BlockingQueuedConnection);
     connect(this, &Controller::RequestForPortStartSignal, param->model, &Model::RequestForPortStart, Qt::BlockingQueuedConnection);
     connect(this, &Controller::RequestForPortStopSignal, param->model, &Model::RequestForPortStop, Qt::BlockingQueuedConnection);
+    connect(this, &Controller::ReequestForDataToViewSignal, param->serial_helper, &serialHelper::ShowRecString, Qt::BlockingQueuedConnection);
     param->modelThread->start();
     return emit InitSignal(param);
 }
@@ -38,6 +39,14 @@ bool Controller::RequestForPortStop()
 {
     return emit RequestForPortStopSignal();
 }
+
+void Controller::ReequestForDataToView(std::shared_ptr<QString> data)
+{
+    this->dataTransToView = data;
+    bool ret = emit ReequestForDataToViewSignal(data);
+    if (ret) this->dataTransToView = nullptr;
+}
+
 
 
 

@@ -116,6 +116,7 @@ public slots:
     void ReciveSectorClear();
     void SendSectorClear();
     void CheckPortNumber();
+    bool ShowRecString(std::shared_ptr<QString> data);
 signals:
     bool InitSignal(InitParam* param);
     bool PortNumberRequest(std::shared_ptr<QStringList> ret);

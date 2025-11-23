@@ -20,6 +20,8 @@ public slots:
     bool RequestForPortNumber(std::shared_ptr<QStringList> ret);
     bool RequestForPortStart(std::shared_ptr<RunParam> param);
     bool RequestForPortStop();
-
+    void RequestForReceive();
+signals:
+    void RequestForDataTrans(std::shared_ptr<QString> data);
 };
 #endif // MODEL_H

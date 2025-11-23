@@ -287,13 +287,19 @@ void serialHelper::StartSerialFunc()
     //receive config
     getHex = this->hexGetC->isChecked();
     autoChange = this->rowAutoChangeC->isChecked();
-    recDivideChar = this->reciveDivideCharC->toPlainText().toStdString()[0];
+    if(this->reciveDivideCharC->toPlainText().toStdString().size() < 1) recDivideChar = ' ';
+    else recDivideChar = this->reciveDivideCharC->toPlainText().toStdString()[0];
 
     //send config
     sendHex = this->hexSendC->isChecked();
-    senDivideChar = this->sendDivideCharC->toPlainText().toStdString()[0];
+    if (this->sendDivideCharC->toPlainText().toStdString().size() < 1) senDivideChar = ' ';
+    else senDivideChar = this->sendDivideCharC->toPlainText().toStdString()[0];
     autoSend_ = this->autoSendC->isChecked();
     msDelay = this->spin->value();
+
+    // set auto change row
+    if (autoChange) this->reciver->setWordWrapMode(QTextOption::WrapAnywhere);
+    else this->reciver->setWordWrapMode(QTextOption::NoWrap);
 
     //load run param
     std::shared_ptr<RunParam> runParam = std::make_shared<RunParam>();
@@ -400,6 +406,12 @@ void serialHelper::CheckPortNumber()
     this->portNumberC->addItems(*ret);
     ret = nullptr;
     emit PortNumberRequestReturn(true);
+}
+
+bool serialHelper::ShowRecString(std::shared_ptr<QString> data)
+{
+    this->reciver->insertPlainText(*data);
+    return true;
 }
 
 serialHelper::~serialHelper()
