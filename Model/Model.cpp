@@ -120,7 +120,7 @@ bool Model::RequestForSend(std::shared_ptr<QString> data)
             QByteArray qbArray = QByteArray::fromHex(tmpArray);
             this->serialPort->write(qbArray);
         } else {
-            QByteArray arraySend(strs[i].toStdString().c_str(), sizeof(strs[i]));
+            QByteArray arraySend(strs[i].toStdString().c_str());
             this->serialPort->write(arraySend);
         }
     }
